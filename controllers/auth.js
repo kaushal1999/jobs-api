@@ -6,8 +6,12 @@ const login = async (req, res) => {
   const { email, password } = req.body;
   if (!email || !password)
     throw new error.badRequest("Provide all required fields");
-
-  const user = await User.find(req.body);
+   
+  const salt = await bcrypt.genSalt(10)
+  const hashedPassword = await bcrypt.hash(password, salt)
+  console.log(hashedPassword);
+  const tempUser={email,password:hashedPassword}
+  const user = await User.find(tempUser);
 
   if (user.length === 0) {
     throw new error.unauthenticated("User doesn`t exists!");
@@ -16,8 +20,9 @@ const login = async (req, res) => {
   res.status(StatusCodes.ACCEPTED).json(user);
 };
  
+
 const register = async (req, res) => {
-  
+ 
   const user = await User.create(req.body);
   res.status(StatusCodes.CREATED).json(user);
 };
