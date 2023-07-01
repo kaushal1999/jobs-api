@@ -7,17 +7,20 @@ const login = async (req, res) => {
   if (!email || !password)
     throw new error.badRequest("Provide all required fields");
    
-  const salt = await bcrypt.genSalt(10)
-  const hashedPassword = await bcrypt.hash(password, salt)
-  console.log(hashedPassword);
-  const tempUser={email,password:hashedPassword}
-  const user = await User.find(tempUser);
+  
+  const user = await User.findOne({ email });
 
-  if (user.length === 0) {
+  if (!user) {
     throw new error.unauthenticated("User doesn`t exists!");
   }
 
-  res.status(StatusCodes.ACCEPTED).json(user);
+  const isMatch = await user.comparePassword(password)
+
+  if (!isMatch) {
+    throw new error.unauthenticated("Wrong password!");
+  }
+  const token=user.createToken()
+  res.status(StatusCodes.OK).json(token);
 };
  
 
