@@ -1,7 +1,7 @@
 class customError extends Error{
 
     customError(message,statusCode) {
-        this.message = message
+        this.message=message
         this.status=statusCode
     }
 }
