@@ -8,10 +8,10 @@ const getAllJobs = async (req, res) => {
 };
 
 const getJob = async (req, res) => {
-    const { id } =req.params
-    const job = await Job.findById(id)
-    if(!job) throw new customError("No job found!")
-    res.status(StatusCodes.OK).json(job); 
+  const { id } = req.params;
+  const job = await Job.findById({ _id: id, createdBy: req.userId });
+  if (!job) throw new customError("No job found!",404);
+  res.status(StatusCodes.OK).json(job);
 };
 
 const createJob = async (req, res) => {
@@ -20,13 +20,25 @@ const createJob = async (req, res) => {
   res.status(StatusCodes.CREATED).json(job);
 };
 
-const updateJob = (req, res) => {};
+const updateJob = async (req, res) => {
+  const { id } = req.params;
+  const job = await Job.findByIdAndUpdate(
+    { _id: id, createdBy: req.userId },
+    req.body,
+    {
+        new: true,
+        runValidators:true
+    }
+  );
+  if (!job) throw new customError("No job found!",404);
+  res.status(StatusCodes.OK).json(job);
+};
 
 const deleteJob = async (req, res) => {
-    const { id } =req.params
-    const job = await Job.findByIdAndDelete(id)
-    if(!job) throw new customError("No job found!")
-    res.status(StatusCodes.OK).json(job);
+  const { id } = req.params;
+  const job = await Job.findByIdAndDelete({ _id: id, createdBy: req.userId });
+  if (!job) throw new customError("No job found!",StatusCodes.NOT_FOUND);
+  res.status(StatusCodes.OK).json(job);
 };
 
 module.exports = {

@@ -20,7 +20,7 @@ const login = async (req, res) => {
     throw new error.unauthenticated("Wrong password!");
   }
   const token=user.createToken()
-  res.status(StatusCodes.OK).json(token);
+  res.status(StatusCodes.OK).json({ token: token });
 };
  
 
@@ -28,7 +28,9 @@ const register = async (req, res) => {
  
   const user = await User.create(req.body);
   const token = user.createToken()
-  res.status(StatusCodes.CREATED).json(token);
+  res.status(StatusCodes.CREATED).json({
+    token:token
+  });
 };
 
 module.exports = { login, register };
