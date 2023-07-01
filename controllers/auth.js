@@ -24,7 +24,8 @@ const login = async (req, res) => {
 const register = async (req, res) => {
  
   const user = await User.create(req.body);
-  res.status(StatusCodes.CREATED).json(user);
+  const token = user.createToken()
+  res.status(StatusCodes.CREATED).json(token);
 };
 
 module.exports = { login, register };
